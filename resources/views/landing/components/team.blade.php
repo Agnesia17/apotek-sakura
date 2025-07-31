@@ -7,7 +7,7 @@
                 <div class="row">
                     <div class="col-lg-4">
                         <div class="team-member">
-                            <img class="mx-auto rounded-circle" src="assets/img/team/1.jpg" alt="..." />
+                            <img class="mx-auto rounded-circle" src="{{asset('landing/assets/img/team/1.jpg')}}" alt="..." />
                             <h4 class="text-dark">Agnes Monika</h4>
                             <p class="text-muted">Pimpinan Apotik Sakura</p>
                             <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Parveen Anand Twitter Profile"><i class="fab fa-twitter"></i></a>
@@ -17,7 +17,7 @@
                     </div>
                     <div class="col-lg-4">
                         <div class="team-member">
-                            <img class="mx-auto rounded-circle" src="assets/img/team/2.jpg" alt="..." />
+                            <img class="mx-auto rounded-circle" src="{{asset('landing/assets/img/team/2.jpg')}}" alt="..." />
                             <h4 class="text-dark">Putri Rahayu</h4>
                             <p class="text-muted">Apoteker</p>
                             <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Diana Petersen Twitter Profile"><i class="fab fa-twitter"></i></a>

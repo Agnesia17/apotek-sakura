@@ -71,12 +71,12 @@
                                        class="btn btn-outline-secondary" title="Edit">
                                         <i class="ti ti-edit"></i>
                                     </a>
-                                    <button type="button" 
+                                    {{-- <button type="button" 
                                             class="btn btn-outline-secondary" 
                                             title="Hapus"
                                             onclick="confirmDelete({{ $pelanggan->id_pelanggan }}, '{{ $pelanggan->nama }}')">
                                         <i class="ti ti-trash"></i>
-                                    </button>
+                                    </button> --}}
                                 </div>
                             </td>
                         </tr>

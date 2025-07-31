@@ -53,11 +53,17 @@ class PelangganController extends Controller
             'password.min' => 'Password minimal 8 karakter',
             'password.confirmed' => 'Konfirmasi password tidak cocok',
         ]);
-
+    
         try {
+            // Hash password sebelum disimpan
+            $validated['password'] = Hash::make($validated['password']);
+    
             Pelanggan::create($validated);
+    
             return redirect()->route('admin.pelanggan')->with('success', 'Data pelanggan berhasil ditambahkan!');
+
         } catch (\Exception $e) {
+
             return redirect()->back()->with('error', 'Gagal menambahkan data pelanggan: ' . $e->getMessage())->withInput();
         }
     }
@@ -89,7 +95,7 @@ class PelangganController extends Controller
     public function update(Request $request, string $id): RedirectResponse
     {
         $pelanggan = Pelanggan::findOrFail($id);
-
+    
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:pelanggan,username,' . $id . ',id_pelanggan',
@@ -109,15 +115,16 @@ class PelangganController extends Controller
             'password.min' => 'Password minimal 8 karakter',
             'password.confirmed' => 'Konfirmasi password tidak cocok',
         ]);
-
+    
         try {
-            // Remove password from validated data if not provided
-            if (empty($validated['password'])) {
+            if (!empty($validated['password'])) {
+                $validated['password'] = Hash::make($validated['password']);
+            } else {
                 unset($validated['password']);
-                unset($validated['password_confirmation']);
             }
-
+    
             $pelanggan->update($validated);
+    
             return redirect()->route('admin.pelanggan')->with('success', 'Data pelanggan berhasil diperbarui!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal memperbarui data pelanggan: ' . $e->getMessage())->withInput();
