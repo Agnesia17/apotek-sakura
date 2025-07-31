@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dashboard Apoteker - Apotek Sakura')
+@section('title', 'Apoteker')
 
 @section('content')
 <div class="col-12">
@@ -126,48 +126,75 @@
     </div>
 </div>
 
-<!-- Recent Transactions -->
-<div class="col-xl-8">
+<!-- History Penjualan -->
+<div class="col-12">
     <div class="card">
         <div class="card-header">
-            <h5><i class="fas fa-history me-2"></i>Transaksi Terbaru</h5>
+            <h5><i class="fas fa-history me-2"></i>History Penjualan</h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="historyPenjualanTable">
                     <thead>
                         <tr>
-                            <th>No. Invoice</th>
-                            <th>Pelanggan</th>
-                            <th>Total</th>
-                            <th>Status</th>
+                            <th>ID Penjualan</th>
                             <th>Tanggal</th>
+                            <th>Pelanggan</th>
+                            <th>Item</th>
+                            <th>Total Harga</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($recentTransactions ?? [] as $transaction)
                         <tr>
                             <td>
-                                @if($transaction->id)
-                                    <a href="{{ route('admin.penjualan.show', $transaction->id) }}" class="text-primary">
-                                        {{ $transaction->no_invoice ?? 'N/A' }}
-                                    </a>
+                                <a href="{{ route('admin.penjualan.show', $transaction->id_penjualan) }}" class="text-primary fw-bold">
+                                    #{{ $transaction->id_penjualan }}
+                                </a>
+                            </td>
+                            <td>
+                                <div class="fw-bold">{{ $transaction->tanggal ? $transaction->tanggal->format('d/m/Y') : 'N/A' }}</div>
+                                <small class="text-muted">{{ $transaction->created_at ? $transaction->created_at->format('H:i') : '-' }}</small>
+                            </td>
+                            <td>
+                                @if($transaction->pelanggan)
+                                    <div class="fw-bold">{{ $transaction->pelanggan->nama }}</div>
+                                    <small class="text-muted">{{ $transaction->pelanggan->telepon ?? '-' }}</small>
                                 @else
-                                    <span class="text-muted">N/A</span>
+                                    <span class="text-muted">Pelanggan Umum</span>
                                 @endif
                             </td>
-                            <td>{{ $transaction->pelanggan->nama ?? 'N/A' }}</td>
-                            <td>Rp {{ number_format($transaction->total_harga ?? 0, 0, ',', '.') }}</td>
                             <td>
-                                <span class="badge bg-{{ $transaction->status === 'selesai' ? 'success' : ($transaction->status === 'diproses' ? 'warning' : 'secondary') }}">
-                                    {{ ucfirst($transaction->status ?? 'unknown') }}
+                                <span class="badge bg-light-info">{{ $transaction->penjualanDetail->sum('jumlah') }} item</span>
+                                <br>
+                                <small class="text-muted">{{ $transaction->penjualanDetail->count() }} jenis</small>
+                            </td>
+                            <td>
+                                <div class="fw-bold">Rp {{ number_format($transaction->total_harga - $transaction->diskon, 0, ',', '.') }}</div>
+                                @if($transaction->diskon > 0)
+                                    <small class="text-success">Diskon: Rp {{ number_format($transaction->diskon, 0, ',', '.') }}</small>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ $transaction->status === 'selesai' ? 'success' : ($transaction->status === 'pending' ? 'warning' : 'secondary') }}">
+                                    {{ ucfirst($transaction->status) }}
                                 </span>
                             </td>
-                            <td>{{ $transaction->tanggal ? $transaction->tanggal->format('d/m/Y H:i') : 'N/A' }}</td>
+                            <td>
+                                <a href="{{ route('admin.penjualan.show', $transaction->id_penjualan) }}" 
+                                   class="btn btn-outline-info btn-sm" title="Detail">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="5" class="text-center">Tidak ada transaksi terbaru</td>
+                        <tr class="no-data-row">
+                            <td colspan="7" class="text-center py-4">
+                                <i class="fas fa-shopping-cart fs-1 text-muted d-block mb-2"></i>
+                                <p class="text-muted">Belum ada data penjualan</p>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -177,68 +204,8 @@
     </div>
 </div>
 
-<!-- Stock Alerts -->
-<div class="col-xl-4">
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-exclamation-triangle me-2"></i>Peringatan Stok</h5>
-        </div>
-        <div class="card-body">
-            <div class="stock-alerts">
-                @forelse($stockAlerts ?? [] as $alert)
-                <div class="alert-item">
-                    <div class="alert-icon">
-                        <i class="fas fa-exclamation-triangle text-warning"></i>
-                    </div>
-                    <div class="alert-content">
-                        <h6>{{ $alert->nama_obat }}</h6>
-                        <p>Stok: {{ $alert->stok }} {{ $alert->satuan }}</p>
-                    </div>
-                </div>
-                @empty
-                <div class="text-center text-muted">
-                    <i class="fas fa-check-circle fa-2x mb-2"></i>
-                    <p>Tidak ada peringatan stok</p>
-                </div>
-                @endforelse
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Access Information -->
-<div class="col-12">
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-info-circle me-2"></i>Informasi Akses</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6 class="text-success">Akses yang Diizinkan:</h6>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success me-2"></i>Melihat dan mengelola data obat</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Melakukan transaksi penjualan</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Melihat data pelanggan</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Melihat laporan penjualan</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Mengelola spesifikasi obat</li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <h6 class="text-danger">Akses yang Dibatasi:</h6>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-times text-danger me-2"></i>Menambah/menghapus obat</li>
-                        <li><i class="fas fa-times text-danger me-2"></i>Mengelola pembelian</li>
-                        <li><i class="fas fa-times text-danger me-2"></i>Mengelola user admin</li>
-                        <li><i class="fas fa-times text-danger me-2"></i>Mengakses laporan keuangan</li>
-                        <li><i class="fas fa-times text-danger me-2"></i>Konfigurasi sistem</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+@push('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 <style>
 .stat-widget {
     border: none;
@@ -286,32 +253,62 @@
     padding-top: 15px;
 }
 
-.stock-alerts .alert-item {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.stock-alerts .alert-item:last-child {
-    border-bottom: none;
-}
-
-.alert-icon {
-    margin-right: 15px;
-    font-size: 1.2rem;
-}
-
-.alert-content h6 {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #333;
-}
-
-.alert-content p {
-    margin: 5px 0 0 0;
-    font-size: 0.8rem;
-    color: #6c757d;
+.no-data-row td {
+    border: none !important;
 }
 </style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function() {
+    try {
+        var table = $('#historyPenjualanTable');
+        var tableBody = table.find('tbody');
+        
+        // Check if table has data rows (excluding the no-data-row)
+        var hasDataRows = tableBody.find('tr:not(.no-data-row)').length > 0;
+        
+        if (hasDataRows) {
+            // Remove the no-data-row before initializing DataTable
+            tableBody.find('.no-data-row').remove();
+            
+            // Verify table structure before initializing DataTable
+            var headerCells = table.find('thead th').length;
+            var firstDataRow = tableBody.find('tr:first td').length;
+            
+            if (headerCells === firstDataRow) {
+                table.DataTable({
+                    "pageLength": 10,
+                    "order": [[ 1, "desc" ]], // Sort by date (newest first)
+                    "language": {
+                        "search": "Cari:",
+                        "lengthMenu": "Tampilkan _MENU_ data",
+                        "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "Selanjutnya",
+                            "previous": "Sebelumnya"
+                        }
+                    }
+                });
+            } else {
+                console.warn('Table structure mismatch. Header cells:', headerCells, 'Data cells:', firstDataRow);
+                table.addClass('table-striped');
+            }
+        } else {
+            // If no data, just add basic styling without DataTable
+            table.addClass('table-striped');
+        }
+    } catch (error) {
+        console.error('Error initializing DataTable:', error);
+        // Fallback: just add basic styling
+        $('#historyPenjualanTable').addClass('table-striped');
+    }
+});
+</script>
+@endpush
 @endsection 

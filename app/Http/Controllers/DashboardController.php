@@ -139,14 +139,13 @@ class DashboardController extends Controller
         $penjualanHariIni = $salesStats['today']['transactions'];
         $totalPelanggan = $generalStats['total_pelanggan'];
         $obatKadaluarsa = $generalStats['obat_almost_expired'];
-        $recentActivities = collect(); // Placeholder for activities
 
         return view('admin.dashboard', compact(
             'totalObat',
             'penjualanHariIni',
             'totalPelanggan',
             'obatKadaluarsa',
-            'recentActivities'
+            'recentTransactions'
         ));
     }
 }
