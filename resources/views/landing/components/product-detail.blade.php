@@ -65,10 +65,10 @@
             <div class="col-lg-6 mb-4">
                 <div class="position-relative">
                     @if($product->image_url)
-                        <img class="img-fluid rounded shadow" src="{{ asset($product->image_url) }}" alt="{{ $product->nama_obat }}" 
-                             onerror="this.src='{{ asset('landing/assets/img/portfolio/1.jpg') }}'" />
+                        <img class="img-fluid rounded shadow product-detail-image" src="{{ asset($product->image_url) }}" alt="{{ $product->nama_obat }}" 
+                             onerror="this.src='{{ asset('landing/assets/default/obatt.jpg') }}'" />
                     @else
-                        <img class="img-fluid rounded shadow" src="{{ asset('landing/assets/img/portfolio/1.jpg') }}" alt="{{ $product->nama_obat }}" />
+                        <img class="img-fluid rounded shadow product-detail-image" src="{{ asset('landing/assets/default/obatt.jpg') }}" alt="{{ $product->nama_obat }}" />
                     @endif
                     
                     <!-- Status Badge -->
@@ -159,10 +159,46 @@
                                     <div class="col-8">{{ $product->spesifikasi->komposisi }}</div>
                                 </div>
                                 @endif
+                                @if($product->spesifikasi->kandungan)
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>Kandungan:</strong></div>
+                                    <div class="col-8">{{ $product->spesifikasi->kandungan }}</div>
+                                </div>
+                                @endif
+                                @if($product->spesifikasi->bentuk_sediaan)
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>Bentuk Sediaan:</strong></div>
+                                    <div class="col-8">{{ $product->spesifikasi->bentuk_sediaan }}</div>
+                                </div>
+                                @endif
+                                @if($product->spesifikasi->kemasan)
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>Kemasan:</strong></div>
+                                    <div class="col-8">{{ $product->spesifikasi->kemasan }}</div>
+                                </div>
+                                @endif
                                 @if($product->spesifikasi->dosis)
                                 <div class="row mb-2">
                                     <div class="col-4"><strong>Dosis:</strong></div>
                                     <div class="col-8">{{ $product->spesifikasi->dosis }}</div>
+                                </div>
+                                @endif
+                                @if($product->spesifikasi->dosis_dewasa)
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>Dosis Dewasa:</strong></div>
+                                    <div class="col-8">{{ $product->spesifikasi->dosis_dewasa }}</div>
+                                </div>
+                                @endif
+                                @if($product->spesifikasi->dosis_anak)
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>Dosis Anak:</strong></div>
+                                    <div class="col-8">{{ $product->spesifikasi->dosis_anak }}</div>
+                                </div>
+                                @endif
+                                @if($product->spesifikasi->cara_pakai)
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>Cara Pakai:</strong></div>
+                                    <div class="col-8">{{ $product->spesifikasi->cara_pakai }}</div>
                                 </div>
                                 @endif
                                 @if($product->spesifikasi->indikasi)
@@ -183,12 +219,33 @@
                                     <div class="col-8">{{ $product->spesifikasi->efek_samping }}</div>
                                 </div>
                                 @endif
+                                @if($product->spesifikasi->cara_kerja)
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>Cara Kerja:</strong></div>
+                                    <div class="col-8">{{ $product->spesifikasi->cara_kerja }}</div>
+                                </div>
+                                @endif
+                                @if($product->spesifikasi->penyimpanan)
+                                <div class="row mb-2">
+                                    <div class="col-4"><strong>Penyimpanan:</strong></div>
+                                    <div class="col-8">{{ $product->spesifikasi->penyimpanan }}</div>
+                                </div>
+                                @endif
                                 @if($product->spesifikasi->peringatan)
                                 <div class="row mb-0">
                                     <div class="col-4"><strong>Peringatan:</strong></div>
                                     <div class="col-8 text-warning">{{ $product->spesifikasi->peringatan }}</div>
                                 </div>
                                 @endif
+                            </div>
+                        </div>
+                    </div>
+                    @else
+                    <div class="mb-4">
+                        <h5 class="mb-3">Spesifikasi</h5>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="text-muted mb-0">Spesifikasi produk belum tersedia.</p>
                             </div>
                         </div>
                     </div>
@@ -231,12 +288,10 @@
                         <div class="card h-100 shadow-sm">
                             <a href="{{ route('products.show', $related->id_obat) }}" class="text-decoration-none">
                                 @if($related->image_url)
-                                    <img class="card-img-top" src="{{ asset($related->image_url) }}" alt="{{ $related->nama_obat }}" 
-                                         style="height: 200px; object-fit: cover;" 
-                                         onerror="this.src='{{ asset('landing/assets/img/portfolio/1.jpg') }}'" />
+                                    <img class="card-img-top related-product-image" src="{{ asset($related->image_url) }}" alt="{{ $related->nama_obat }}" 
+                                         onerror="this.src='{{ asset('landing/assets/default/obat.png') }}'" />
                                 @else
-                                    <img class="card-img-top" src="{{ asset('landing/assets/img/portfolio/1.jpg') }}" alt="{{ $related->nama_obat }}" 
-                                         style="height: 200px; object-fit: cover;" />
+                                    <img class="card-img-top related-product-image" src="{{ asset('landing/assets/default/obat.png') }}" alt="{{ $related->nama_obat }}" />
                                 @endif
                                 <div class="card-body text-center">
                                     <h6 class="card-title text-dark">{{ $related->nama_obat }}</h6>
@@ -284,6 +339,45 @@
 .breadcrumb-item + .breadcrumb-item::before {
     content: ">";
     color: #6c757d;
+}
+
+/* Default image styling */
+img[src*="default/obat.png"] {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Ensure consistent image display */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+    min-height: 400px;
+    object-fit: cover;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Product detail image styling */
+.product-detail-image {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Related products image styling */
+.related-product-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
 }
 </style>
 

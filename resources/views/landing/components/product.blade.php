@@ -50,27 +50,31 @@
             <div class="col-lg-4 col-md-6 mb-4 product-item-wrapper">
                 <div class="product-item">
                     <a class="product-link" href="{{ route('products.show', $product->id_obat) }}">
-                        <div class="product-hover">
-                            <div class="product-hover-content">
-                                <i class="fas fa-eye fa-2x"></i>
-                                <p class="mt-2">Lihat Detail</p>
+                        <div class="product-image-container">
+                            @if($product->image_url)
+                                <img class="product-image" src="{{ asset($product->image_url) }}" alt="{{ $product->nama_obat }}" 
+                                     onerror="this.src='{{ asset('landing/assets/default/obatt.jpg') }}'" />
+                            @else
+                                <img class="product-image" src="{{ asset('landing/assets/default/obatt.jpg') }}" alt="{{ $product->nama_obat }}" />
+                            @endif
+                            
+                            <!-- Status Badge -->
+                            @if($product->status_kadaluarsa == 'akan_kadaluarsa')
+                                <span class="badge bg-warning position-absolute top-0 end-0 m-2">Akan Kadaluarsa</span>
+                            @elseif($product->status_kadaluarsa == 'kadaluarsa')
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">Kadaluarsa</span>
+                            @elseif($product->stok <= 10)
+                                <span class="badge bg-warning position-absolute top-0 end-0 m-2">Stok Terbatas</span>
+                            @endif
+                            
+                            <!-- Hover Overlay -->
+                            <div class="product-hover">
+                                <div class="product-hover-content">
+                                    <i class="fas fa-eye fa-2x"></i>
+                                    <p class="mt-2">Lihat Detail</p>
+                                </div>
                             </div>
                         </div>
-                        @if($product->image_url)
-                            <img class="img-fluid" src="{{ asset($product->image_url) }}" alt="{{ $product->nama_obat }}" 
-                                 onerror="this.src='{{ asset('landing/assets/img/portfolio/1.jpg') }}'" />
-                        @else
-                            <img class="img-fluid" src="{{ asset('landing/assets/img/portfolio/1.jpg') }}" alt="{{ $product->nama_obat }}" />
-                        @endif
-                        
-                        <!-- Status Badge -->
-                        @if($product->status_kadaluarsa == 'akan_kadaluarsa')
-                            <span class="badge bg-warning position-absolute top-0 end-0 m-2">Akan Kadaluarsa</span>
-                        @elseif($product->status_kadaluarsa == 'kadaluarsa')
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">Kadaluarsa</span>
-                        @elseif($product->stok <= 10)
-                            <span class="badge bg-warning position-absolute top-0 end-0 m-2">Stok Terbatas</span>
-                        @endif
                     </a>
                     <div class="product-caption">
                         <div class="product-caption-heading">{{ $product->nama_obat }}</div>
@@ -144,10 +148,14 @@
     position: relative;
     margin: 0 auto;
     max-width: 400px;
+    height: 100%;
     transition: transform 0.3s ease;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
 }
 
 .product-item:hover {
@@ -161,10 +169,39 @@
     margin: 0 auto;
     cursor: pointer;
     text-decoration: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-image-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    padding: 0;
+    background-color: #fff;
+}
+
+.product-item:hover .product-image {
+    transform: scale(1.05);
 }
 
 .product-item .product-link .product-hover {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background: rgba(25, 135, 84, 0.9);
@@ -173,6 +210,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2;
 }
 
 .product-item .product-link .product-hover:hover {
@@ -187,35 +225,62 @@
 .product-item .product-caption {
     background-color: #fff;
     text-align: center;
-    padding: 25px;
+    padding: 20px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
 }
 
 .product-caption-heading {
     font-weight: 700;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     margin-bottom: 0.5rem;
     color: #212529;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-caption-subheading {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
 }
 
 .product-price {
     font-size: 1.1rem;
     font-weight: 600;
+    margin: 0.5rem 0;
 }
 
 .product-stock {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
 }
 
 .product-brand {
     font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.product-supplier {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
 }
 
 .add-to-cart {
     transition: all 0.3s ease;
+    margin-top: auto;
+    width: 100%;
 }
 
 .add-to-cart:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 /* List View Styles */
@@ -227,19 +292,59 @@
 .list-view .product-item {
     max-width: none;
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    align-items: stretch;
     margin-bottom: 20px;
+    height: auto;
 }
 
 .list-view .product-link {
     flex: 0 0 200px;
     max-width: 200px;
+    height: 200px;
+}
+
+.list-view .product-image-container {
+    height: 250px;
 }
 
 .list-view .product-caption {
     flex: 1;
     text-align: left;
     padding: 20px;
+    min-height: auto;
+    justify-content: flex-start;
+}
+
+.list-view .product-caption-heading {
+    -webkit-line-clamp: 1;
+    font-size: 1.2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-image-container {
+        height: 250px;
+    }
+    
+    .product-item .product-caption {
+        padding: 15px;
+        min-height: 180px;
+    }
+    
+    .product-caption-heading {
+        font-size: 1rem;
+    }
+    
+    .list-view .product-item {
+        flex-direction: column;
+    }
+    
+    .list-view .product-link {
+        flex: none;
+        max-width: none;
+        height: 200px;
+    }
 }
 
 /* Filter Card Styling */
@@ -261,6 +366,16 @@
 .btn-success:hover {
     background-color: #157347;
     border-color: #146c43;
+}
+
+/* Ensure equal height cards in grid */
+.product-item-wrapper {
+    display: flex;
+    margin-bottom: 1.5rem;
+}
+
+.product-item-wrapper .product-item {
+    width: 100%;
 }
 </style>
 

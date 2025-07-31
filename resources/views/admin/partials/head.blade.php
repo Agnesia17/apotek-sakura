@@ -11,7 +11,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- [Favicon] icon -->
-  <link rel="icon" href="{{ asset('assets/admin/images/favicon.svg') }}" type="image/x-icon">
+  <link rel="icon" href="{{ asset('assets/admin/images/sakurapotek2.ico') }}" type="image/x-icon">
   
   <!-- [Google Font] Family -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" id="main-font-link">
