@@ -106,7 +106,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr>
+                        <tr class="no-data-row">
                             <td colspan="6" class="text-center py-4">
                                 <i class="ti ti-check-circle fs-1 text-success d-block mb-2"></i>
                                 <p class="text-success">Tidak Ada Obat Kadaluarsa</p>
@@ -160,6 +160,14 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<style>
+.no-data-row td {
+    border: none !important;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.05);
+}
+</style>
 @endpush
 
 @push('scripts')
@@ -209,21 +217,50 @@ function confirmDeleteExpired(id, name, expiryDate, isForceDelete = false) {
 }
 
 $(document).ready(function() {
-    $('#expiredObatTable').DataTable({
-        "pageLength": 10,
-        "order": [[ 3, "asc" ]], // Sort by expiry date (oldest first)
-        "language": {
-            "search": "Cari:",
-            "lengthMenu": "Tampilkan _MENU_ data",
-            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-            "paginate": {
-                "first": "Pertama",
-                "last": "Terakhir",
-                "next": "Selanjutnya",
-                "previous": "Sebelumnya"
+    try {
+        var table = $('#expiredObatTable');
+        var tableBody = table.find('tbody');
+        
+        // Check if table has data rows (excluding the no-data-row)
+        var hasDataRows = tableBody.find('tr:not(.no-data-row)').length > 0;
+        
+        if (hasDataRows) {
+            // Remove the no-data-row before initializing DataTable
+            tableBody.find('.no-data-row').remove();
+            
+            // Verify table structure before initializing DataTable
+            var headerCells = table.find('thead th').length;
+            var firstDataRow = tableBody.find('tr:first td').length;
+            
+            if (headerCells === firstDataRow) {
+                table.DataTable({
+                    "pageLength": 10,
+                    "order": [[ 3, "asc" ]], // Sort by expiry date (oldest first)
+                    "language": {
+                        "search": "Cari:",
+                        "lengthMenu": "Tampilkan _MENU_ data",
+                        "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "Selanjutnya",
+                            "previous": "Sebelumnya"
+                        }
+                    }
+                });
+            } else {
+                console.warn('Table structure mismatch. Header cells:', headerCells, 'Data cells:', firstDataRow);
+                table.addClass('table-striped');
             }
+        } else {
+            // If no data, just add basic styling without DataTable
+            table.addClass('table-striped');
         }
-    });
+    } catch (error) {
+        console.error('Error initializing DataTable:', error);
+        // Fallback: just add basic styling
+        $('#expiredObatTable').addClass('table-striped');
+    }
 });
 </script>
 @endpush
